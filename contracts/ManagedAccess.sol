@@ -42,7 +42,7 @@ abstract contract ManagedAccess {
     }
 
     modifier onlyAllConfirmed() {
-        require(msg.sender == owner, "You are not authorized");
+        require(msg.sender == owner, "You are not authorized to manage this contract");
         
         for (uint256 i = 0; i < managerList.length; i++) {
             require(confirmed[managerList[i]], "Not all confirmed yet");

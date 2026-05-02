@@ -51,6 +51,7 @@ describe("My Token", () => {
             await expect(
                 myTokenC.connect(hacker).mint(mintingAgainAmount, hacker.address)
             ).to.be.revertedWith("You are not a manager");
+
         });
     });
 

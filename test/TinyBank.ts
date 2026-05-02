@@ -96,7 +96,7 @@ describe("TinyBank", () => {
         const rewardToChange = hre.ethers.parseUnits("10000", DECIMALS);
         await expect(
             tinyBankC.connect(hacker).setRewardPerBlock(rewardToChange)
-        ).to.be.revertedWith("You are not authorized");
+        ).to.be.revertedWith("You are not authorized to manage this contract");
 
     });
     });
