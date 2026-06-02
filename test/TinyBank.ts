@@ -11,15 +11,13 @@ describe("TinyBank", () => {
     
     beforeEach(async () => {
         signers = await hre.ethers.getSigners();
-        myTokenC = await hre.ethers.deployContract("MyToken", [
-            "MyToken",
-            "MT",
-            DECIMALS,
-            MINTING_AMOUNT,
-        ]);
+        myTokenC = await hre.ethers.deployContract("MyToken", ["MyToken", "MT", DECIMALS, MINTING_AMOUNT,]);
         tinyBankC = await hre.ethers.deployContract("TinyBank", [
+    
             await myTokenC.getAddress(),
+
         ]);
+        
         await myTokenC.setManager(tinyBankC.getAddress());
     });
 
@@ -42,7 +40,9 @@ describe("TinyBank", () => {
         const signer0 = signers[0];
         const stakingAmout = hre.ethers.parseUnits("50", DECIMALS);
         await myTokenC.approve(await tinyBankC.getAddress(), stakingAmout);
-        await tinyBankC.stake(stakingAmout);
+        await expect(tinyBankC.stake(stakingAmout)).to.emit(tinyBankC, "Staked").withArgs(
+            signer0.address, stakingAmout
+        );
         expect(await tinyBankC.staked(signer0.address)).equal(stakingAmout);
         expect(await tinyBankC.totalStaked()).equal(stakingAmout);
         expect(await myTokenC.balanceOf(tinyBankC)).equal(
@@ -61,7 +61,9 @@ describe("TinyBank", () => {
         const stakingAmout = hre.ethers.parseUnits("50", DECIMALS);
         await myTokenC.approve(await tinyBankC.getAddress(), stakingAmout);
         await tinyBankC.stake(stakingAmout);
-        await tinyBankC.withdraw(stakingAmout);
+        await expect(tinyBankC.withdraw(stakingAmout))
+            .to.emit(tinyBankC, "Withdraw")
+            .withArgs( stakingAmout, signer0.address);
         expect(await tinyBankC.staked(signer0.address)).equal(0);
         
     });

@@ -57,6 +57,12 @@ contract TinyBank is ManagedAccess{
         
     }
 
+    function setRewardPerBlock(uint256 _amout) external onlyManager {
+
+        rewardPerBlock = _amout;
+    }
+
+
     function stake(uint256 _amout) external updateReward(msg.sender) {
 
         require(_amout >= 0, "cannot stake 0 amout");
@@ -66,12 +72,7 @@ contract TinyBank is ManagedAccess{
         emit Staked(msg.sender, _amout);
 
     }
-
-    function setRewardPerBlock(uint256 _amout) external onlyAllConfirmed {
-
-        rewardPerBlock = _amout;
-    }
-
+    
     function withdraw(uint256 _amout) external updateReward(msg.sender) {
 
         require(staked[msg.sender] >= _amout, "insufficiient staked token");
@@ -79,6 +80,22 @@ contract TinyBank is ManagedAccess{
         staked[msg.sender] -= _amout;
         totalStaked -= _amout;
         emit Withdraw(_amout, msg.sender);
+
+    }
+
+    function currentReward(address to) external view returns (uint256) {
+
+        if (staked[to] > 0) {
+
+            uint256 blocks = block.number - lastClaimedBlock[to];
+
+            return (blocks * rewardPerBlock * staked[to]) / totalStaked;
+
+        } else {
+
+            return 0;
+
+        }
 
     }
 
